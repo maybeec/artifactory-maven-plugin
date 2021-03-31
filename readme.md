@@ -12,6 +12,7 @@ A Bintray plugin to deploy Maven artifacts and upload Eclipse repositories.
 | <h5>Install</h5> | [![Central][central_icon]][central_link] | [![Bintray][bintray_icon]][bintray_link] | 
 
 Similar plugins
+* [random-maven/bintray-maven-plugin](https://github.com/random-maven/bintray-maven-plugin)
 * [devexperts/bintray-maven-plugin](https://github.com/Devexperts/bintray-maven-plugin)
 
 Plugin features
