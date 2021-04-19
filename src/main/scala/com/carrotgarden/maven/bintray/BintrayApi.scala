@@ -1,4 +1,4 @@
-package com.carrotgarden.maven.bintray
+package com.carrotgarden.maven.artifactory
 
 import org.apache.maven.plugin.AbstractMojo
 import org.apache.maven.plugins.annotations._
@@ -25,7 +25,7 @@ import java.io.IOException
 import org.json.JSONArray
 
 /**
- * Bintray REST API. Entry point to the bintray resource management.
+ * Bintray REST API. Entry point to the artifactory resource management.
  */
 trait BintrayApi {
 
@@ -34,31 +34,31 @@ trait BintrayApi {
   @Description( """
   Bintray REST API URL.
   """ )
-  @Parameter( property     = "bintray.restApiUrl", defaultValue = "https://bintray.com/api/v1" )
+  @Parameter( property     = "artifactory.restApiUrl", required = true )
   var restApiUrl : String = _
 
   @Description( """
   REST api connection timeout, seconds.
   """ )
-  @Parameter( property     = "bintray.restConnectTimeout", defaultValue = "30" )
+  @Parameter( property     = "artifactory.restConnectTimeout", defaultValue = "30" )
   var restConnectTimeout : Int = _
 
   @Description( """
   REST api read operation timeout, seconds.
   """ )
-  @Parameter( property     = "bintray.restReadTimeout", defaultValue = "30" )
+  @Parameter( property     = "artifactory.restReadTimeout", defaultValue = "30" )
   var restReadTimeout : Int = _
 
   @Description( """
   REST api write operation timeout, seconds.
   """ )
-  @Parameter( property     = "bintray.restWriteTimeout", defaultValue = "30" )
+  @Parameter( property     = "artifactory.restWriteTimeout", defaultValue = "30" )
   var restWriteTimeout : Int = _
 
   @Description( """
   Bintray public download URL.
   """ )
-  @Parameter( property     = "bintray.downloadUrl", defaultValue = "https://dl.bintray.com" )
+  @Parameter( property     = "artifactory.downloadUrl", defaultValue = "https://dl.artifactory.com" )
   var downloadUrl : String = _
 
   /**
@@ -69,7 +69,7 @@ trait BintrayApi {
   lazy val BINARY = MediaType.parse( "application/octet-stream" )
 
   /**
-   * Provide bintray REST API authentication from
+   * Provide artifactory REST API authentication from
    * {@code username}/{@code password} with fallback to the {@link #serverId}.
    */
   lazy val basicAuthenticator = new Authenticator() {
@@ -89,13 +89,13 @@ trait BintrayApi {
   };
 
   /**
-   * Provide bintray proxy authentication from {@link #serverId}.
+   * Provide artifactory proxy authentication from {@link #serverId}.
    * https://maven.apache.org/guides/mini/guide-proxies.html
    */
   lazy val proxyOption = settings.getProxies.asScala.find( _.getId == serverId )
 
   /**
-   * Provide bintray proxy authentication from {@link #serverId}.
+   * Provide artifactory proxy authentication from {@link #serverId}.
    * https://maven.apache.org/guides/mini/guide-proxies.html
    */
   lazy val proxyAuthenticator = {
@@ -110,7 +110,7 @@ trait BintrayApi {
   }
 
   /**
-   * Provide bintray proxy authentication from {@link #serverId}.
+   * Provide artifactory proxy authentication from {@link #serverId}.
    * https://maven.apache.org/guides/mini/guide-proxies.html
    */
   lazy val proxySelector : java.net.ProxySelector = {
@@ -165,18 +165,18 @@ trait BintrayApi {
 
   /**
    * Maven upload url
-   * https://bintray.com/docs/api/#_maven_upload
+   * https://artifactory.com/docs/api/#_maven_upload
    */
   def urlMavenDeploy() = {
     // PUT /maven/:subject/:repo/:package/:file_path[;publish=0/1]
-    restApiUrl + "/maven/" + subject + "/" + repository + "/" + bintrayPackage;
+    restApiUrl + "/maven/" + subject + "/" + repository + "/" + artifactoryPackage;
   }
 
   /**
    * Enumerate remote file content.
    */
   def urlContentDownload( relativePath : String ) = {
-    // https://dl.bintray.com/random-maven/maven/repository
+    // https://dl.artifactory.com/random-maven/maven/repository
     downloadUrl + "/" + subject + "/" + repository + "/" + relativePath
   }
 
@@ -193,39 +193,39 @@ trait BintrayApi {
    * Upload local file content. Must provide meta data via headers.
    */
   def urlContentUpload( relativePath : String ) = {
-    restApiUrl + "/content/" + subject + "/" + repository + "/" + relativePath
+    restApiUrl + subject + "/" + repository + "/" + relativePath
   }
 
   /**
    * Content publish url
-   * https://bintray.com/docs/api/#_publish_discard_uploaded_content
+   * https://artifactory.com/docs/api/#_publish_discard_uploaded_content
    */
   def urlContentPublish() = {
     // POST /content/:subject/:repo/:package/:version/publish
-    restApiUrl + "/content/" + subject + "/" + repository + "/" + bintrayPackage + "/" + bintrayVersion + "/publish";
+    restApiUrl + "/content/" + subject + "/" + repository + "/" + artifactoryPackage + "/" + artifactoryVersion + "/publish";
   }
 
   /**
    * Package descriptor url
-   * https://bintray.com/docs/api/#_get_package
+   * https://artifactory.com/docs/api/#_get_package
    */
   def urlPackageGet() = {
     // GET /packages/:subject/:repo/:package[?attribute_values=1]
-    restApiUrl + "/packages/" + subject + "/" + repository + "/" + bintrayPackage;
+    restApiUrl + "/packages/" + subject + "/" + repository + "/" + artifactoryPackage;
   }
 
   /**
    * Get all files in a given package.
-   * https://bintray.com/docs/api/#_get_package_files
+   * https://artifactory.com/docs/api/#_get_package_files
    */
   def urlPackageList() = {
     // GET /packages/:subject/:repo/:package/files[?include_unpublished=0/1]
-    restApiUrl + "/packages/" + subject + "/" + repository + "/" + bintrayPackage + "/files";
+    restApiUrl + "/packages/" + subject + "/" + repository + "/" + artifactoryPackage + "/files";
   }
 
   /**
    * Package create url
-   * https://bintray.com/docs/api/#_create_package
+   * https://artifactory.com/docs/api/#_create_package
    */
   def urlPackageCreate() = {
     // POST /packages/:subject/:repo
@@ -234,29 +234,29 @@ trait BintrayApi {
 
   /**
    * Package delete url
-   * https://bintray.com/docs/api/#url_delete_package
+   * https://artifactory.com/docs/api/#url_delete_package
    */
   def urlPackageDelete() = {
     // DELETE /packages/:subject/:repo/:package
-    restApiUrl + "/packages/" + subject + "/" + repository + "/" + bintrayPackage;
+    restApiUrl + "/packages/" + subject + "/" + repository + "/" + artifactoryPackage;
   }
 
   /**
    * Version descriptor url
-   * https://bintray.com/docs/api/#_get_version
+   * https://artifactory.com/docs/api/#_get_version
    */
   def urlVersionGet( version : String ) = {
     // GET /packages/:subject/:repo/:package/versions/:version[?attribute_values=1]
-    restApiUrl + "/packages/" + subject + "/" + repository + "/" + bintrayPackage + "/versions/" + version;
+    restApiUrl + "/packages/" + subject + "/" + repository + "/" + artifactoryPackage + "/versions/" + version;
   }
 
   /**
    * Version delete url
-   * https://bintray.com/docs/api/#url_delete_version
+   * https://artifactory.com/docs/api/#url_delete_version
    */
   def urlVersionDelete( version : String ) = {
     // DELETE /packages/:subject/:repo/:package/versions/:version
-    restApiUrl + "/packages/" + subject + "/" + repository + "/" + bintrayPackage + "/versions/" + version;
+    restApiUrl + "/packages/" + subject + "/" + repository + "/" + artifactoryPackage + "/versions/" + version;
   }
 
   /**
@@ -288,7 +288,7 @@ trait BintrayApi {
    * Remove previous versions of artifacts from repository.
    */
   def contentCleanup() = {
-    getLog().info( "Cleaning package content: " + bintrayPackage )
+    getLog().info( "Cleaning package content: " + artifactoryPackage )
     val packageJson = packageGet()
     val latest = packageJson.optString( "latest_version", "invalid_version" )
     val versionList = packageJson.getJSONArray( "versions" )
@@ -310,10 +310,10 @@ trait BintrayApi {
   }
 
   /**
-   * Mark deployed artifact as "published" for bintray consumption.
+   * Mark deployed artifact as "published" for artifactory consumption.
    */
   def contentPublish() = {
-    getLog().info( "Publishing package content: " + bintrayPackage )
+    getLog().info( "Publishing package content: " + artifactoryPackage )
     val url = urlContentPublish()
     val json = "{}";
     val body = RequestBody.create( JSON, json )
@@ -366,7 +366,7 @@ trait BintrayApi {
   }
 
   /**
-   * Verify bintray target package is present.
+   * Verify artifactory target package is present.
    */
   def hasPackage() : Boolean = {
     val url = urlPackageGet()
@@ -377,7 +377,7 @@ trait BintrayApi {
   }
 
   /**
-   * Fetch bintray target package description.
+   * Fetch artifactory target package description.
    */
   def packageGet() : JSONObject = {
     val url = urlPackageGet()
@@ -394,7 +394,7 @@ trait BintrayApi {
   }
 
   /**
-   * Fetch bintray target package file list descriptors.
+   * Fetch artifactory target package file list descriptors.
    *
    * Status: 200 OK
    * [
@@ -426,7 +426,7 @@ trait BintrayApi {
   }
 
   /**
-   * Fetch bintray target package file list descriptors.
+   * Fetch artifactory target package file list descriptors.
    */
   def packageListPath() : Seq[ String ] = {
     packageList().iterator.asScala.toSeq.map { entry =>
@@ -437,12 +437,12 @@ trait BintrayApi {
   }
 
   /**
-   * Create bintray target package entry with required meta data.
+   * Create artifactory target package entry with required meta data.
    */
   def packageCreate() = {
     val url = urlPackageCreate()
     val json = new JSONObject() //
-      .put( "name", bintrayPackage ) //
+      .put( "name", artifactoryPackage ) //
       .put( "vcs_url", packageVcsUrl ) //
       .put( "licenses", packageLicenses ) //
       .toString()
@@ -457,7 +457,7 @@ trait BintrayApi {
   }
 
   /**
-   * Delete bintray target package with all versions of artifacts.
+   * Delete artifactory target package with all versions of artifacts.
    */
   def packageDelete() = {
     val url = urlPackageGet()
@@ -475,27 +475,27 @@ trait BintrayApi {
    */
   def destroyPackage() = {
     if ( hasPackage() ) {
-      getLog().info( "Bintray package delete: ... " + bintrayPackage )
+      getLog().info( "Bintray package delete: ... " + artifactoryPackage )
       packageDelete()
     } else {
-      getLog().info( "Bintray package is missing: " + bintrayPackage )
+      getLog().info( "Bintray package is missing: " + artifactoryPackage )
     }
   }
 
   /**
-   * Create target bintray package on demand.
+   * Create target artifactory package on demand.
    */
   def ensurePackage() = {
     if ( hasPackage() ) {
-      getLog().info( "Bintray package is present: " + bintrayPackage )
+      getLog().info( "Bintray package is present: " + artifactoryPackage )
     } else {
-      getLog().info( "Bintray package create ...: " + bintrayPackage )
+      getLog().info( "Bintray package create ...: " + artifactoryPackage )
       packageCreate()
     }
   }
 
   /**
-   * Fetch bintray package version description.
+   * Fetch artifactory package version description.
    */
   def versionGet( version : String ) : JSONObject = {
     val url = urlVersionGet( version )
@@ -512,7 +512,7 @@ trait BintrayApi {
   }
 
   /**
-   * Create bintray package version description with attached artifacts.
+   * Create artifactory package version description with attached artifacts.
    */
   def versionCreate( version : String ) = { // FIXME
     val url = urlVersionDelete( version )
@@ -526,7 +526,7 @@ trait BintrayApi {
   }
 
   /**
-   * Delete bintray package version description with attached artifacts.
+   * Delete artifactory package version description with attached artifacts.
    */
   def versionDelete( version : String ) = {
     val url = urlVersionDelete( version )

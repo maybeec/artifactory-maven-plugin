@@ -11,12 +11,12 @@
         <relativePath>.mvn</relativePath>
     </parent>
 
-    <groupId>com.carrotgarden.maven</groupId>
-    <artifactId>bintray-maven-plugin</artifactId>
+    <groupId>com.devonfw</groupId>
+    <artifactId>artifactory-maven-plugin</artifactId>
     <version>${revision}</version>
     <packaging>maven-plugin</packaging>
 
-    <name>Bintray Maven Plugin</name>
+    <name>Artifactory Maven Plugin</name>
 
     <description>
       Deploy Maven project artifacts to existing Bintray Maven repository.
@@ -29,11 +29,11 @@
         </license>
     </licenses>
 
-    <url>https://github.com/random-maven/bintray-maven-plugin</url>
+    <url>https://github.com/maybeec/artifactory-maven-plugin</url>
     <scm>
-        <url>https://github.com/random-maven/bintray-maven-plugin</url>
-        <connection>scm:git:git@github.com:random-maven/bintray-maven-plugin.git</connection>
-        <developerConnection>scm:git:git@github.com:random-maven/bintray-maven-plugin.git</developerConnection>
+        <url>https://github.com/maybeec/artifactory-maven-plugin</url>
+        <connection>scm:git:git@github.com:maybeec/artifactory-maven-plugin.git</connection>
+        <developerConnection>scm:git:git@github.com:maybeec/artifactory-maven-plugin.git</developerConnection>
     </scm>
 
 	<!-- Maven epoch. -->
@@ -132,7 +132,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-plugin-plugin</artifactId>
                 <configuration>
-                    <goalPrefix>bintray</goalPrefix>
+                    <goalPrefix>artifactory</goalPrefix>
                 </configuration>
             </plugin>
 
