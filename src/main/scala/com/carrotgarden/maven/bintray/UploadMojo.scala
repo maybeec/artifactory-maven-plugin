@@ -146,15 +146,15 @@ class UploadMojo extends AbstractMojo
   }
 
   override def perform() : Unit = {
-    if ( performDestroy ) {
+    /*if ( performDestroy ) {
       destroyPackage()
-    }
-    if ( performEnsure ) {
+    }*/
+    /*if ( performEnsure ) {
       ensurePackage()
-    }
-    if ( performCleanup ) {
+    }*/
+    /*if ( performCleanup ) {
       cleanupContent()
-    }
+    }*/
     if ( performUpload ) {
       uploadContent()
     }

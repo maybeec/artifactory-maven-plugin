@@ -1,4 +1,4 @@
-package com.carrotgarden.maven.artifactory
+package com.carrotgarden.maven.bintray
 
 import org.apache.maven.plugin.AbstractMojo
 import org.apache.maven.plugins.annotations._
@@ -169,7 +169,7 @@ trait BintrayApi {
    */
   def urlMavenDeploy() = {
     // PUT /maven/:subject/:repo/:package/:file_path[;publish=0/1]
-    restApiUrl + "/maven/" + subject + "/" + repository + "/" + artifactoryPackage;
+    restApiUrl + "/maven/" + subject + "/" + repository + "/" + bintrayPackage;
   }
 
   /**
@@ -193,7 +193,7 @@ trait BintrayApi {
    * Upload local file content. Must provide meta data via headers.
    */
   def urlContentUpload( relativePath : String ) = {
-    restApiUrl + subject + "/" + repository + "/" + relativePath
+    restApiUrl + repository + "/" + relativePath
   }
 
   /**
@@ -202,7 +202,7 @@ trait BintrayApi {
    */
   def urlContentPublish() = {
     // POST /content/:subject/:repo/:package/:version/publish
-    restApiUrl + "/content/" + subject + "/" + repository + "/" + artifactoryPackage + "/" + artifactoryVersion + "/publish";
+    restApiUrl + "/content/" + subject + "/" + repository + "/" + bintrayPackage + "/" + bintrayVersion + "/publish";
   }
 
   /**
@@ -211,7 +211,7 @@ trait BintrayApi {
    */
   def urlPackageGet() = {
     // GET /packages/:subject/:repo/:package[?attribute_values=1]
-    restApiUrl + "/packages/" + subject + "/" + repository + "/" + artifactoryPackage;
+    restApiUrl + "/packages/" + subject + "/" + repository + "/" + bintrayPackage;
   }
 
   /**
@@ -220,7 +220,7 @@ trait BintrayApi {
    */
   def urlPackageList() = {
     // GET /packages/:subject/:repo/:package/files[?include_unpublished=0/1]
-    restApiUrl + "/packages/" + subject + "/" + repository + "/" + artifactoryPackage + "/files";
+    restApiUrl + "/packages/" + subject + "/" + repository + "/" + bintrayPackage + "/files";
   }
 
   /**
@@ -238,7 +238,7 @@ trait BintrayApi {
    */
   def urlPackageDelete() = {
     // DELETE /packages/:subject/:repo/:package
-    restApiUrl + "/packages/" + subject + "/" + repository + "/" + artifactoryPackage;
+    restApiUrl + "/packages/" + subject + "/" + repository + "/" + bintrayPackage;
   }
 
   /**
@@ -247,7 +247,7 @@ trait BintrayApi {
    */
   def urlVersionGet( version : String ) = {
     // GET /packages/:subject/:repo/:package/versions/:version[?attribute_values=1]
-    restApiUrl + "/packages/" + subject + "/" + repository + "/" + artifactoryPackage + "/versions/" + version;
+    restApiUrl + "/packages/" + subject + "/" + repository + "/" + bintrayPackage + "/versions/" + version;
   }
 
   /**
@@ -256,7 +256,7 @@ trait BintrayApi {
    */
   def urlVersionDelete( version : String ) = {
     // DELETE /packages/:subject/:repo/:package/versions/:version
-    restApiUrl + "/packages/" + subject + "/" + repository + "/" + artifactoryPackage + "/versions/" + version;
+    restApiUrl + "/packages/" + subject + "/" + repository + "/" + bintrayPackage + "/versions/" + version;
   }
 
   /**
@@ -288,7 +288,7 @@ trait BintrayApi {
    * Remove previous versions of artifacts from repository.
    */
   def contentCleanup() = {
-    getLog().info( "Cleaning package content: " + artifactoryPackage )
+    getLog().info( "Cleaning package content: " + bintrayPackage )
     val packageJson = packageGet()
     val latest = packageJson.optString( "latest_version", "invalid_version" )
     val versionList = packageJson.getJSONArray( "versions" )
@@ -313,7 +313,7 @@ trait BintrayApi {
    * Mark deployed artifact as "published" for artifactory consumption.
    */
   def contentPublish() = {
-    getLog().info( "Publishing package content: " + artifactoryPackage )
+    getLog().info( "Publishing package content: " + bintrayPackage )
     val url = urlContentPublish()
     val json = "{}";
     val body = RequestBody.create( JSON, json )
@@ -442,7 +442,7 @@ trait BintrayApi {
   def packageCreate() = {
     val url = urlPackageCreate()
     val json = new JSONObject() //
-      .put( "name", artifactoryPackage ) //
+      .put( "name", bintrayPackage ) //
       .put( "vcs_url", packageVcsUrl ) //
       .put( "licenses", packageLicenses ) //
       .toString()
@@ -475,10 +475,10 @@ trait BintrayApi {
    */
   def destroyPackage() = {
     if ( hasPackage() ) {
-      getLog().info( "Bintray package delete: ... " + artifactoryPackage )
+      getLog().info( "Bintray package delete: ... " + bintrayPackage )
       packageDelete()
     } else {
-      getLog().info( "Bintray package is missing: " + artifactoryPackage )
+      getLog().info( "Bintray package is missing: " + bintrayPackage )
     }
   }
 
@@ -487,9 +487,9 @@ trait BintrayApi {
    */
   def ensurePackage() = {
     if ( hasPackage() ) {
-      getLog().info( "Bintray package is present: " + artifactoryPackage )
+      getLog().info( "Bintray package is present: " + bintrayPackage )
     } else {
-      getLog().info( "Bintray package create ...: " + artifactoryPackage )
+      getLog().info( "Bintray package create ...: " + bintrayPackage )
       packageCreate()
     }
   }
